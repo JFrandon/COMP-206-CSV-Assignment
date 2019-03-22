@@ -69,6 +69,7 @@ void load_and_convert(const char* filename) {
 	size linenum = get_linenumber(filename);
 	FILE * *  fileArr = get_array_from_file(filename);
 
-	FILE * output = fopen("./output.csv", "w+");
+	FILE * output = fopen("output.csv", "wt");
 	convert_arr_to_csv(output, fileArr, linenum);
+	fclose(output);
 }
