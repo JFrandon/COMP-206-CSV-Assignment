@@ -75,9 +75,15 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
+    <ClCompile Include="main.c" />
+    <ClCompile Include="convert_to_csv.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="convert_to_csv.h" />
+    <ClInclude Include="read_csv.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="input.txt" />
   </ItemGroup>
   <ItemDefinitionGroup />
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
