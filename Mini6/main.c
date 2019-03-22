@@ -7,14 +7,12 @@ int match_line(FILE* f, char * m) {
 	int d;
 	if (c == EOF) return -1;
 	if (*m == 0 && c == ',') { 
-		return 0;
+		return 1;
 	}
 	if (c != *m) {
-		return -1;
+		return 0;
 	}
-	if (c == *m && (d = match_line) >= 0) {
-		putchar(c);
-		putchar(d);
+	if (c == *m && (d = match_line(f,++m)) > 0) {
 		return 1;
 	}
 	else {
@@ -28,15 +26,17 @@ void find_name(const char* csv_filename, const char* name) {
 	int r = 0;
 	char c;
 	do {
-		if ((r=match_line(f, name)) == 1) {
+		if ((r=match_line(f, name)) ==1) {
+			printf("%s,", name);
 			while((c = fgetc(f)) != '\n') putchar(c);
 			putchar('\n');
 		}
 		else {
-			do { c = fgetc(f); } while (c != '\n');
+			do { c = fgetc(f); } while (c != '\n' && c !=EOF);
 		}
 
 	} while (r != -1);
+	fclose(f);
 
 }
 
@@ -47,7 +47,8 @@ int main()
 	
 	load_and_convert("input.txt");
 	read_csv("output.csv");
-	//find_name("output.csv", "Maria");
+	find_name("output.csv", "Maria");
+	find_name("output.csv", "Jason");
 
 	return 0;
 }
