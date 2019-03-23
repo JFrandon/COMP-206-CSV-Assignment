@@ -14,7 +14,7 @@ int get_char_number(const char* csv_filename) {
 	return i;
 }
 
-void filecp(char * source, char * dest) {
+void filecp(const char * source,const char * dest) {
 	FILE *s = fopen(source, "rt");
 	FILE * d = fopen(dest, "wt");
 	int c;
@@ -51,7 +51,7 @@ void find_name(const char* csv_filename, const char* name) {
 
 	} while (c != -1);
 	fclose(f);
-
+	putchar('\n');
 }
 
 void add_record(const char*	csv_filename, const char* name, const int age, const char* city) {
@@ -85,6 +85,7 @@ void delete_record(const char* csv_filename, const char* name) {
 	fclose(f);
 	fclose(g);
 	filecp("/tmp/temp.txt", csv_filename);
+	system("rm /tmp/temp.txt");
 }
 
 int main()

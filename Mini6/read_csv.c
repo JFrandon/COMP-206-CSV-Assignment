@@ -8,4 +8,5 @@ read_csv(const char* csv_filename) {
 		putchar(c);
 	}
 	fclose(f);
+	putchar('\n');
 }
