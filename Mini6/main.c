@@ -1,33 +1,47 @@
 #include<stdio.h>
 #include <stdlib.h>
-#include "./convert_to_csv.h"
+#include <string.h>
+#include "convert_to_csv.h"
+#include "read_csv.h"
 
-int match_line(FILE* f, char * m) {
-	int c = fgetc(f);
-	int d;
-	if (c == EOF) return -1;
-	if (*m == 0 && c == ',') { 
-		return 1;
+int get_char_number(const char* csv_filename) {
+	FILE *f=fopen(csv_filename,"rt");
+	int i = 1;
+	while ((fgetc(f)) != EOF) {
+		i++;
 	}
-	if (c != *m) {
-		return 0;
-	}
-	if (c == *m && (d = match_line(f,++m)) > 0) {
-		return 1;
-	}
-	else {
-		return 0;
-	}
+	fclose(f);
+	return i;
+}
 
+void filecp(char * source, char * dest) {
+	FILE *s = fopen(source, "rt");
+	FILE * d = fopen(dest, "wt");
+	int c;
+	while ((c = fgetc(s)) != EOF) {
+		fputc(c,d);
+	}
+	fclose(s);
+	fclose(d);
+}
+
+const char * match_line(FILE* f, const char * m) {
+	int l = strlen(m);
+	const char * comp = calloc(l + 1, sizeof(char));
+	char * c = comp;
+	for (int i = 0; i < l; i++) {
+		if ((*(c++) = fgetc(f)) != *(m + i))
+			break;
+	}
+	return comp;
 }
 
 void find_name(const char* csv_filename, const char* name) {
 	FILE * f = fopen(csv_filename,"rt");
-	int r = 0;
-	char c;
+	int c;
 	do {
-		if ((r=match_line(f, name)) ==1) {
-			printf("%s,", name);
+		if ((strcmp(match_line(f, name),name)) ==0) {
+			printf("%s", name);
 			while((c = fgetc(f)) != '\n') putchar(c);
 			putchar('\n');
 		}
@@ -35,20 +49,58 @@ void find_name(const char* csv_filename, const char* name) {
 			do { c = fgetc(f); } while (c != '\n' && c !=EOF);
 		}
 
-	} while (r != -1);
+	} while (c != -1);
 	fclose(f);
 
 }
 
+void add_record(const char*	csv_filename, const char* name, const int age, const char* city) {
+	FILE * f = fopen(csv_filename,"at");
+	fprintf(f, "%s,%d,%s\n", name, age, city);
+	fclose(f);
+}
 
+void delete_record(const char* csv_filename, const char* name) {
+	FILE * f = fopen(csv_filename, "rt");
+	FILE * g = fopen("/tmp/temp.txt", "wt"); //*nix specific
+	int r = 0;
+	int c;
+	char * result;
+	do {
+		result = match_line(f, name);
+		if ((strcmp(result, name)) != 0) {
+			fprintf(g,"%s", result);
+			while ((c = fgetc(f)) != '\n') fputc(c,g);
+			fputc('\n',g);
+		}
+		else {
+			do { c = fgetc(f); } while (c != '\n' && c != EOF);
+			while ((c = fgetc(f)) != EOF) {
+				fputc(c,g);
+			}
+			break;
+		}
+
+	} while (r != -1);
+	fclose(f);
+	fclose(g);
+	filecp("/tmp/temp.txt", csv_filename);
+}
 
 int main()
 {
-	
+	/* Question 1 */
 	load_and_convert("input.txt");
+	/* Question 2 */
 	read_csv("output.csv");
+	/* Question 3.1 */
 	find_name("output.csv", "Maria");
-	find_name("output.csv", "Jason");
-
+	find_name("output.csv", "Jason"); //Jason doesn't exist
+	/* Question 3.2 */
+	add_record("output.csv", "Jason", 36, "Skookumchuk");
+	read_csv("output.csv"); // to print to the screen
+	/* Question 3.3 */
+	delete_record("output.csv", "Maria");
+	read_csv("output.csv"); // to print to the screen
 	return 0;
 }
